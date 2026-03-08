@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World At War 2 - Battle Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: rgba(42, 42, 42, 0.95);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4af37;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 30px;
+            font-size: 3.5em;
+            text-shadow: 3px 3px 0 #5a3e1a, 5px 5px 0 rgba(0,0,0,0.3);
+            letter-spacing: 4px;
+            font-weight: bold;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 20px;
+            font-family: 'Impact', 'Courier New', monospace;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            color: #e0e0e0;
+            margin: 20px 0 15px 0;
+            font-size: 2em;
+            border-left: 5px solid #d4af37;
+            padding-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+
+        h3 {
+            color: #d4af37;
+            margin: 15px 0 10px 0;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+
+        .teams-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .team-card {
+            background: #2a2a2a;
+            border-radius: 8px;
+            border: 2px solid;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .team-color-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #d4af37;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #2a2a2a;
+        }
+
+        .team-color-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .team-color-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 2px;
+        }
+
+        .team-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+
+        .troop-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .troop-selector::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .troop-selector::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .troop-selector::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .troop-row {
+            display: grid;
+            grid-template-columns: 45px 180px 1fr 90px 90px 35px;
+            align-items: center;
+            gap: 10px;
+            background: #333;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #4a4a4a;
+            transition: all 0.2s ease;
+        }
+
+        .troop-row:hover {
+            border-color: #d4af37;
+            background: #3a3a3a;
+        }
+
+        .troop-icon {
+            font-size: 1.8em;
+            text-align: center;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+        }
+
+        .troop-name {
+            color: #f0f0f0;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .troop-stats {
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+
+        .troop-input {
+            width: 80px;
+            padding: 8px;
+            background: #2a2a2a;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .troop-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px #d4af37;
+        }
+
+        .troop-lives {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background: #8b0000;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: #a52a2a;
+            transform: scale(1.1);
+        }
+
+        .add-troop-btn {
+            background: #2a2a2a;
+            color: #d4af37;
+            border: 2px dashed #d4af37;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .add-troop-btn:hover {
+            background: #3a3a3a;
+            border-style: solid;
+        }
+
+        .troop-dropdown {
+            background: #2a2a2a;
+            color: #f0f0f0;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+        }
+
+        .troop-dropdown:hover {
+            background: #333;
+        }
+
+        .troop-dropdown option {
+            background: #2a2a2a;
+            color: #f0f0f0;
+        }
+
+        .battle-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .battle-btn {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .battle-btn:hover {
+            background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+            color: #ffd966;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .battle-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #3a1a1a 0%, #2a0a0a 100%);
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #4a2a2a 0%, #3a1a1a 100%);
+            color: #ff4444;
+        }
+
+        .nuke-btn {
+            background: linear-gradient(135deg, #4a1a1a 0%, #3a0a0a 100%);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+
+        .nuke-btn:hover {
+            background: linear-gradient(135deg, #5a2a2a 0%, #4a1a1a 100%);
+        }
+
+        /* Dropdown Sections */
+        .dropdown-section {
+            margin-bottom: 25px;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            background: rgba(42, 42, 42, 0.9);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .dropdown-header {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            padding: 18px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #d4af37;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-header:hover {
+            background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+        }
+
+        .dropdown-header h3 {
+            margin: 0;
+            color: #d4af37;
+            font-size: 1.4em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dropdown-arrow {
+            color: #d4af37;
+            font-size: 1.8em;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        .dropdown-arrow.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .dropdown-content {
+            padding: 25px;
+            max-height: 600px;
+            overflow-y: auto;
+            transition: max-height 0.3s ease;
+            background: rgba(32, 32, 32, 0.95);
+        }
+
+        .dropdown-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dropdown-content::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .dropdown-content::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .dropdown-content.collapsed {
+            display: none;
+        }
+
+        .battle-log {
+            background: #0a0a0a;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 20px;
+            height: 450px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .battle-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .battle-log::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .battle-log::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .log-entry {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-left: 4px solid #d4af37;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .log-entry .unit-life {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .dice-log {
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        .hit-log {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .attacker-loss {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .defender-loss {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .tie-log {
+            color: #87ceeb;
+            font-style: italic;
+        }
+
+        .retreat-log {
+            color: #ffff00;
+            font-weight: bold;
+            background: rgba(74, 74, 74, 0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .bomber-log {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+
+        .fighter-log {
+            color: #87ceeb;
+            font-weight: bold;
+        }
+
+        .aa-log {
+            color: #ff69b4;
+            font-weight: bold;
+        }
+
+        .ship-log {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .ground-log {
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        .priority-list {
+            background: #2a2a2a;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 20px;
+            color: #f0f0f0;
+            font-size: 1em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .priority-item {
+            padding: 8px 15px;
+            background: #3a3a3a;
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            color: #f0f0f0;
+            font-size: 0.95em;
+            transition: all 0.2s ease;
+        }
+
+        .priority-item:hover {
+            background: #4a4a4a;
+            transform: scale(1.05);
+        }
+
+        .air-rule-info {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 20px;
+            color: #f0f0f0;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .fighter-rule { color: #87ceeb; font-weight: bold; }
+        .bomber-rule { color: #ff00ff; font-weight: bold; }
+        .aa-rule { color: #ff69b4; font-weight: bold; }
+        .ship-rule { color: #00ffff; font-weight: bold; }
+        .ground-rule { color: #8b4513; font-weight: bold; }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .left-content {
+            overflow: hidden;
+        }
+
+        .right-panel {
+            background: rgba(32, 32, 32, 0.95);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+            max-height: 700px;
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .right-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .right-panel::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .right-panel::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .turn-snapshot {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-left: 4px solid #d4af37;
+            border-radius: 0 6px 6px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .snapshot-title {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 8px;
+        }
+
+        .snapshot-teams {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 0.95em;
+        }
+
+        .snapshot-team {
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .snapshot-team-a {
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 3px solid #ff4444;
+        }
+
+        .snapshot-team-b {
+            background: rgba(68, 68, 255, 0.1);
+            border-left: 3px solid #4444ff;
+        }
+
+        .snapshot-unit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .remaining-troops {
+            background: #2a2a2a;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .remaining-troops::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .remaining-troops::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .remaining-troops::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .troop-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-bottom: 1px solid #4a4a4a;
+            color: #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .troop-entry:hover {
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        .troop-health {
+            color: #ff6b6b;
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        .battle-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .summary-card {
+            background: #2a2a2a;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+        }
+
+        .winner-card {
+            border: 3px solid #d4af37;
+            background: linear-gradient(135deg, #2f4f2f 0%, #1f3f1f 100%);
+            animation: pulse 2s infinite;
+        }
+
+        .loser-card {
+            border: 3px solid #8b0000;
+            background: linear-gradient(135deg, #4f2f2f 0%, #3f1f1f 100%);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        .troop-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #d4af37;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+
+        .phase-indicator {
+            text-align: center;
+            font-size: 1.6em;
+            color: #d4af37;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .bottom-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .planes-retreat-box, .other-retreat-box {
+            background: #2a2a2a;
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .planes-retreat-box {
+            border-color: #ffff00;
+        }
+
+        .other-retreat-box {
+            border-color: #ffa500;
+        }
+
+        .planes-retreat-box::-webkit-scrollbar,
+        .other-retreat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .planes-retreat-box::-webkit-scrollbar-track,
+        .other-retreat-box::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .planes-retreat-box::-webkit-scrollbar-thumb {
+            background: #ffff00;
+            border-radius: 4px;
+        }
+
+        .other-retreat-box::-webkit-scrollbar-thumb {
+            background: #ffa500;
+            border-radius: 4px;
+        }
+
+        .box-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid;
+        }
+
+        .planes-retreat-box .box-title {
+            color: #ffff00;
+            border-color: #ffff00;
+        }
+
+        .other-retreat-box .box-title {
+            color: #ffa500;
+            border-color: #ffa500;
+        }
+
+        .retreat-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px;
+            border-bottom: 1px solid #4a4a4a;
+            color: #f0f0f0;
+        }
+
+        .retreat-entry span:last-child {
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .right-panel {
+                position: static;
+                max-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .teams-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .troop-row {
+                grid-template-columns: 35px 140px 1fr 70px 70px 30px;
+                font-size: 0.9em;
+                gap: 5px;
+            }
+            
+            .battle-controls {
+                flex-direction: column;
+            }
+            
+            .battle-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 1.1em;
+            }
+            
+            .bottom-boxes {
+                grid-template-columns: 1fr;
+            }
+            
+            .snapshot-teams {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        /* Loading animation for battle simulation */
+        .simulating {
+            animation: simulatePulse 1.5s infinite;
+        }
+
+        @keyframes simulatePulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Tooltip styles */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: #2a2a2a;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        [data-tooltip]:hover:before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 data-tooltip="World At War 2 Battle Simulator">⚔️ WORLD AT WAR 2 ⚔️<br>BATTLE SIMULATOR</h1>
+
+        <!-- Team Setup -->
+        <div class="teams-container">
+            <!-- Team A -->
+            <div class="team-card" id="teamA" style="border-color: #ff4444;">
+                <div class="team-header">
+                    <input type="color" class="team-color-input" id="teamAColor" value="#ff4444">
+                    <span class="team-title" id="teamATitle">TEAM A</span>
+                </div>
+                <div class="troop-selector" id="teamATroops">
+                    <!-- Troops will be added here dynamically -->
+                </div>
+                <button class="add-troop-btn" onclick="addTroop('A')" data-tooltip="Add a new troop to Team A">➕ ADD TROOP</button>
+            </div>
+
+            <!-- Team B -->
+            <div class="team-card" id="teamB" style="border-color: #4444ff;">
+                <div class="team-header">
+                    <input type="color" class="team-color-input" id="teamBColor" value="#4444ff">
+                    <span class="team-title" id="teamBTitle">TEAM B</span>
+                </div>
+                <div class="troop-selector" id="teamBTroops">
+                    <!-- Troops will be added here dynamically -->
+                </div>
+                <button class="add-troop-btn" onclick="addTroop('B')" data-tooltip="Add a new troop to Team B">➕ ADD TROOP</button>
+            </div>
+        </div>
+
+        <!-- Combat Rules Dropdown -->
+        <div class="dropdown-section">
+            <div class="dropdown-header" onclick="toggleDropdown('attackOrderDropdown')">
+                <h3>⚔️ ATTACK PRIORITY ORDER</h3>
+                <span class="dropdown-arrow" id="arrow-attackOrderDropdown">▼</span>
+            </div>
+            <div class="dropdown-content" id="attackOrderDropdown">
+                <div class="priority-list">
+                    <span class="priority-item" data-tooltip="Priority 1">1. Field Guns</span>
+                    <span class="priority-item" data-tooltip="Priority 2">2. Fighter Planes</span>
+                    <span class="priority-item" data-tooltip="Priority 3">3. Bomber Planes</span>
+                    <span class="priority-item" data-tooltip="Priority 4">4. Transport Planes</span>
+                    <span class="priority-item" data-tooltip="Priority 5">5. Cruiser</span>
+                    <span class="priority-item" data-tooltip="Priority 6">6. Submarine</span>
+                    <span class="priority-item" data-tooltip="Priority 7">7. Battleship</span>
+                    <span class="priority-item" data-tooltip="Priority 8">8. Light Transport</span>
+                    <span class="priority-item" data-tooltip="Priority 9">9. Heavy Transport Ship</span>
+                    <span class="priority-item" data-tooltip="Priority 10">10. Anti-air Truck</span>
+                    <span class="priority-item" data-tooltip="Priority 11">11. Anti-air Gun</span>
+                    <span class="priority-item" data-tooltip="Priority 12">12. Bunker</span>
+                    <span class="priority-item" data-tooltip="Priority 13">13. Troops</span>
+                    <span class="priority-item" data-tooltip="Priority 14">14. Tanks</span>
+                    <span class="priority-item" data-tooltip="Priority 15">15. Aircraft Carrier</span>
+                </div>
+                <div class="air-rule-info">
+                    <span class="fighter-rule">✈️ FIGHTERS: 1 ground attack, 1 life</span> | 
+                    <span class="bomber-rule">💣 BOMBERS: 5 ground attacks, 5 lives</span> |
+                    <span class="fighter-rule">🛩️ TRANSPORTS: 1 ground attack, 2 lives</span> |
+                    <span class="aa-rule">🎯 AA GUNS/TRUCKS: Planes lose 1 life if defeated</span> |
+                    <span class="ship-rule">🚢 SHIPS: Planes lose 1 life if defeated</span> |
+                    <span class="fighter-rule">✈️ OTHER PLANES: Planes lose 1 life if defeated</span> |
+                    <span class="ground-rule">🪖 TROOPS/TANKS/BUNKERS: Planes retreat safely (no life loss)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Controls -->
+        <div class="battle-controls">
+            <button class="battle-btn" onclick="simulateToVictory()" data-tooltip="Simulate entire battle to victory">⚡ BATTLE TO VICTORY</button>
+            <button class="battle-btn nuke-btn" onclick="useNuke()" data-tooltip="Detonate nuclear weapon">☢️ USE NUKE</button>
+            <button class="battle-btn reset-btn" onclick="resetBattle()" data-tooltip="Reset the battle">🔄 RESET</button>
+        </div>
+
+        <!-- Battle Phase Indicator -->
+        <div class="phase-indicator" id="phaseIndicator">
+            CURRENT: Ready to Battle
+        </div>
+
+        <!-- Main Content with Side Panel -->
+        <div class="main-content">
+            <!-- Left Content -->
+            <div class="left-content">
+                <!-- Remaining Troops Display -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div>
+                        <h3>🏁 TEAM A REMAINING TROOPS</h3>
+                        <div class="remaining-troops" id="teamARemaining">
+                            <div class="troop-entry">No troops selected</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🏁 TEAM B REMAINING TROOPS</h3>
+                        <div class="remaining-troops" id="teamBRemaining">
+                            <div class="troop-entry">No troops selected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Log Dropdown -->
+                <div class="dropdown-section">
+                    <div class="dropdown-header" onclick="toggleDropdown('battleLogDropdown')">
+                        <h3>📜 BATTLE LOG</h3>
+                        <span class="dropdown-arrow" id="arrow-battleLogDropdown">▼</span>
+                    </div>
+                    <div class="dropdown-content" id="battleLogDropdown">
+                        <div class="battle-log" id="battleLog">
+                            <div class="log-entry">=== BATTLE LOG INITIALIZED ===</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Summary -->
+                <div class="battle-summary">
+                    <div class="summary-card" id="teamASummary">
+                        <h3 id="teamAName">TEAM A</h3>
+                        <div class="troop-count" id="teamACount">0</div>
+                        <div>Total Troops</div>
+                        <div id="teamAList" style="margin-top: 15px; font-size: 1em;"></div>
+                    </div>
+                    <div class="summary-card" id="teamBSummary">
+                        <h3 id="teamBName">TEAM B</h3>
+                        <div class="troop-count" id="teamBCount">0</div>
+                        <div>Total Troops</div>
+                        <div id="teamBList" style="margin-top: 15px; font-size: 1em;"></div>
+                    </div>
+                </div>
+
+                <!-- Retreat Boxes at Bottom -->
+                <div class="bottom-boxes">
+                    <!-- Retreating Planes Box (Yellow) -->
+                    <div class="planes-retreat-box" id="planesRetreatBox">
+                        <div class="box-title">✈️ RETREATING PLANES</div>
+                        <div id="planesRetreatList"></div>
+                    </div>
+
+                    <!-- Other Retreating Units Box (Orange) -->
+                    <div class="other-retreat-box" id="otherRetreatBox">
+                        <div class="box-title">⚓ OTHER RETREATING UNITS</div>
+                        <div id="otherRetreatList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Turn History Dropdown -->
+            <div class="right-panel">
+                <div class="dropdown-section" style="margin-bottom: 0;">
+                    <div class="dropdown-header" onclick="toggleDropdown('turnHistoryDropdown')">
+                        <h3>📜 TURN HISTORY</h3>
+                        <span class="dropdown-arrow" id="arrow-turnHistoryDropdown">▼</span>
+                    </div>
+                    <div class="dropdown-content" id="turnHistoryDropdown">
+                        <div id="turnHistory" class="turn-history">
+                            <div style="color: #666; text-align: center; padding: 20px;">No turns yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Available troop types with icons and stats
+        const troopTypes = [
+            { name: 'Field Gun', icon: '🔫', lives: 1, priority: 1, attacks: 1, retreatOnLoss: true, type: 'ground', canAttackAir: false },
+            { name: 'Fighter Plane', icon: '✈️', lives: 1, priority: 2, totalGroundAttacks: 1, retreatOnLoss: false, type: 'air' },
+            { name: 'Bomber', icon: '💣', lives: 5, priority: 3, totalGroundAttacks: 5, retreatOnLoss: false, type: 'air' },
+            { name: 'Transport Plane', icon: '🛩️', lives: 2, priority: 4, totalGroundAttacks: 1, retreatOnLoss: false, type: 'air' },
+            { name: 'Cruiser', icon: '⛴️', lives: 5, priority: 5, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true },
+            { name: 'Submarine', icon: '🛸', lives: 5, priority: 6, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true },
+            { name: 'Battleship', icon: '🚢', lives: 10, priority: 7, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true },
+            { name: 'Light Transport', icon: '🛶', lives: 1, priority: 8, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true },
+            { name: 'Heavy Transport Ship', icon: '🚤', lives: 2, priority: 9, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true },
+            { name: 'Anti-air Truck', icon: '🚚', lives: 1, priority: 10, attacks: Infinity, retreatOnLoss: false, type: 'aa', canAttackAir: true },
+            { name: 'Anti-air Gun', icon: '🎯', lives: 1, priority: 11, attacks: Infinity, retreatOnLoss: false, type: 'aa', canAttackAir: true },
+            { name: 'Bunker', icon: '🏰', lives: 3, priority: 12, attacks: Infinity, retreatOnLoss: false, type: 'ground', canAttackAir: false },
+            { name: 'Troops', icon: '💂', lives: 1, priority: 13, attacks: Infinity, retreatOnLoss: false, type: 'ground', canAttackAir: false },
+            { name: 'Tank', icon: '🚜', lives: 5, priority: 14, attacks: Infinity, retreatOnLoss: false, type: 'ground', canAttackAir: false },
+            { name: 'Aircraft Carrier', icon: '🛳️', lives: 1, priority: 15, attacks: Infinity, retreatOnLoss: false, type: 'ship', canAttackAir: true }
+        ];
+
+        let teamATroops = [];
+        let teamBTroops = [];
+        let retreatedPlanes = [];
+        let retreatedOthers = [];
+        let battleInProgress = false;
+        let turnNumber = 0;
+        let turnHistory = [];
+
+        // Toggle dropdown function
+        window.toggleDropdown = function(id) {
+            const content = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                arrow.classList.remove('collapsed');
+                arrow.innerHTML = '▼';
+            } else {
+                content.classList.add('collapsed');
+                arrow.classList.add('collapsed');
+                arrow.innerHTML = '▶';
+            }
+        };
+
+        // Add troop to team
+        window.addTroop = function(team) {
+            const selectHTML = troopTypes.map(t => 
+                `<option value="${t.name}" data-icon="${t.icon}" data-lives="${t.lives}" data-priority="${t.priority}" data-attacks="${t.attacks || t.totalGroundAttacks || 0}" data-retreat="${t.retreatOnLoss}" data-type="${t.type}">${t.icon} ${t.name} (${t.lives} lives, Priority ${t.priority})</option>`
+            ).join('');
+
+            const troopDiv = document.createElement('div');
+            troopDiv.className = 'troop-row';
+            troopDiv.innerHTML = `
+                <span class="troop-icon">📋</span>
+                <select class="troop-dropdown" onchange="updateTroopIcon(this, '${team}')">
+                    ${selectHTML}
+                </select>
+                <span class="troop-stats"></span>
+                <input type="number" class="troop-input" value="1" min="1" max="100" onchange="updateTroopCount('${team}')">
+                <span class="troop-lives" id="lives-${team}-${Date.now()}">1</span>
+                <button class="remove-btn" onclick="removeTroop(this, '${team}')">✕</button>
+            `;
+
+            document.getElementById(`team${team}Troops`).appendChild(troopDiv);
+            updateTroopIcon(troopDiv.querySelector('.troop-dropdown'), team);
+        };
+
+        // Update troop icon and lives when type changes
+        window.updateTroopIcon = function(select, team) {
+            const row = select.closest('.troop-row');
+            const selectedOption = select.options[select.selectedIndex];
+            const icon = selectedOption.dataset.icon;
+            const lives = parseInt(selectedOption.dataset.lives);
+            
+            const iconSpan = row.querySelector('.troop-icon');
+            const livesSpan = row.querySelector('.troop-lives:last-child');
+            
+            if (icon) {
+                iconSpan.textContent = icon;
+                livesSpan.textContent = lives;
+            }
+            
+            updateTeamSummary();
+        };
+
+        // Remove troop
+        window.removeTroop = function(btn, team) {
+            btn.closest('.troop-row').remove();
+            updateTeamSummary();
+        };
+
+        // Update troop count
+        window.updateTroopCount = function(team) {
+            updateTeamSummary();
+        };
+
+        // Get all troops for a team
+        function getTeamTroops(team) {
+            const rows = document.querySelectorAll(`#team${team}Troops .troop-row`);
+            const troops = [];
+            
+            rows.forEach(row => {
+                const select = row.querySelector('.troop-dropdown');
+                const count = parseInt(row.querySelector('.troop-input').value) || 1;
+                const selectedOption = select.options[select.selectedIndex];
+                const troopType = troopTypes.find(t => t.name === select.value);
+                
+                for (let i = 0; i < count; i++) {
+                    const newTroop = {
+                        ...troopType,
+                        currentLives: troopType.lives,
+                        attacksRemaining: troopType.attacks || Infinity,
+                        groundAttacksRemaining: troopType.totalGroundAttacks || 0,
+                        totalGroundAttacks: troopType.totalGroundAttacks || 0,
+                        id: Date.now() + Math.random() + i
+                    };
+                    troops.push(newTroop);
+                }
+            });
+            
+            return troops.sort((a, b) => a.priority - b.priority);
+        }
+
+        // Save turn snapshot
+        function saveTurnSnapshot(attacker, defender, result) {
+            const snapshot = {
+                turn: ++turnNumber,
+                attacker: attacker ? { ...attacker } : null,
+                defender: defender ? { ...defender } : null,
+                result: result,
+                teamA: teamATroops.map(t => ({ ...t })),
+                teamB: teamBTroops.map(t => ({ ...t })),
+                retreatedPlanes: [...retreatedPlanes],
+                retreatedOthers: [...retreatedOthers]
+            };
+            turnHistory.unshift(snapshot);
+            updateTurnHistory();
+        }
+
+        // Update turn history display
+        function updateTurnHistory() {
+            const historyDiv = document.getElementById('turnHistory');
+            historyDiv.innerHTML = '';
+            
+            if (turnHistory.length === 0) {
+                historyDiv.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No turns yet</div>';
+                return;
+            }
+            
+            turnHistory.forEach(snapshot => {
+                const turnDiv = document.createElement('div');
+                turnDiv.className = 'turn-snapshot';
+                
+                let resultText = '';
+                let resultColor = '#d4af37';
+                if (snapshot.result === 'attacker') {
+                    resultText = '⚔️ Attacker won';
+                    resultColor = '#ff4444';
+                } else if (snapshot.result === 'defender') {
+                    resultText = '🛡️ Defender won';
+                    resultColor = '#4444ff';
+                } else if (snapshot.result === 'tie') {
+                    resultText = '🤝 Tie';
+                    resultColor = '#87ceeb';
+                } else if (snapshot.result === 'retreat') {
+                    resultText = '🏃 Retreat';
+                    resultColor = '#ffff00';
+                }
+                
+                turnDiv.innerHTML = `
+                    <div class="snapshot-title" style="color: ${resultColor}">Turn ${snapshot.turn}: ${snapshot.attacker ? snapshot.attacker.icon : '?'} vs ${snapshot.defender ? snapshot.defender.icon : '?'} - ${resultText}</div>
+                    <div class="snapshot-teams">
+                        <div class="snapshot-team snapshot-team-a">
+                            <strong style="color: #ff4444;">Team A (${snapshot.teamA.length})</strong>
+                            ${snapshot.teamA.map(t => `
+                                <div class="snapshot-unit">
+                                    ${t.icon} ${t.name} <span style="color: #ff6b6b;">❤️ ${t.currentLives}/${t.lives}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="snapshot-team snapshot-team-b">
+                            <strong style="color: #4444ff;">Team B (${snapshot.teamB.length})</strong>
+                            ${snapshot.teamB.map(t => `
+                                <div class="snapshot-unit">
+                                    ${t.icon} ${t.name} <span style="color: #ff6b6b;">❤️ ${t.currentLives}/${t.lives}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                historyDiv.appendChild(turnDiv);
+            });
+        }
+
+        // Update remaining troops display
+        function updateRemainingTroops() {
+            const teamADiv = document.getElementById('teamARemaining');
+            const teamBDiv = document.getElementById('teamBRemaining');
+            
+            teamADiv.innerHTML = '';
+            teamBDiv.innerHTML = '';
+            
+            if (teamATroops.length === 0) {
+                teamADiv.innerHTML = '<div class="troop-entry">💀 COMPLETELY DESTROYED</div>';
+            } else {
+                teamATroops.forEach(troop => {
+                    const entry = document.createElement('div');
+                    entry.className = 'troop-entry';
+                    let attackText = '';
+                    if (troop.type === 'air') {
+                        attackText = ` [${troop.groundAttacksRemaining}/${troop.totalGroundAttacks}]`;
+                    }
+                    entry.innerHTML = `
+                        <span>${troop.icon}</span>
+                        <span>${troop.name}</span>
+                        <span class="troop-health">❤️ ${troop.currentLives}/${troop.lives}${attackText}</span>
+                    `;
+                    teamADiv.appendChild(entry);
+                });
+            }
+            
+            if (teamBTroops.length === 0) {
+                teamBDiv.innerHTML = '<div class="troop-entry">💀 COMPLETELY DESTROYED</div>';
+            } else {
+                teamBTroops.forEach(troop => {
+                    const entry = document.createElement('div');
+                    entry.className = 'troop-entry';
+                    let attackText = '';
+                    if (troop.type === 'air') {
+                        attackText = ` [${troop.groundAttacksRemaining}/${troop.totalGroundAttacks}]`;
+                    }
+                    entry.innerHTML = `
+                        <span>${troop.icon}</span>
+                        <span>${troop.name}</span>
+                        <span class="troop-health">❤️ ${troop.currentLives}/${troop.lives}${attackText}</span>
+                    `;
+                    teamBDiv.appendChild(entry);
+                });
+            }
+        }
+
+        // Update retreat boxes
+        function updateRetreatBoxes() {
+            const planesList = document.getElementById('planesRetreatList');
+            const othersList = document.getElementById('otherRetreatList');
+            
+            planesList.innerHTML = '';
+            othersList.innerHTML = '';
+            
+            if (retreatedPlanes.length === 0) {
+                planesList.innerHTML = '<div class="retreat-entry">No retreated planes</div>';
+            } else {
+                retreatedPlanes.forEach(unit => {
+                    const entry = document.createElement('div');
+                    entry.className = 'retreat-entry';
+                    entry.innerHTML = `
+                        <span>${unit.icon}</span>
+                        <span>${unit.name}</span>
+                        <span>❤️ ${unit.currentLives}/${unit.lives}</span>
+                        <span style="color: #ffff00; font-size: 0.9em;">${unit.reason || 'Retreated'}</span>
+                    `;
+                    planesList.appendChild(entry);
+                });
+            }
+            
+            if (retreatedOthers.length === 0) {
+                othersList.innerHTML = '<div class="retreat-entry">No retreated units</div>';
+            } else {
+                retreatedOthers.forEach(unit => {
+                    const entry = document.createElement('div');
+                    entry.className = 'retreat-entry';
+                    entry.innerHTML = `
+                        <span>${unit.icon}</span>
+                        <span>${unit.name}</span>
+                        <span>❤️ ${unit.currentLives}/${unit.lives}</span>
+                        <span style="color: #ffa500; font-size: 0.9em;">${unit.reason || 'Retreated'}</span>
+                    `;
+                    othersList.appendChild(entry);
+                });
+            }
+        }
+
+        // Update team summary
+        function updateTeamSummary() {
+            teamATroops = teamATroops.filter(t => t.currentLives > 0);
+            teamBTroops = teamBTroops.filter(t => t.currentLives > 0);
+            
+            document.getElementById('teamACount').textContent = teamATroops.length;
+            document.getElementById('teamBCount').textContent = teamBTroops.length;
+            
+            const teamAColor = document.getElementById('teamAColor').value;
+            const teamBColor = document.getElementById('teamBColor').value;
+            
+            document.getElementById('teamA').style.borderColor = teamAColor;
+            document.getElementById('teamB').style.borderColor = teamBColor;
+            document.getElementById('teamAName').style.color = teamAColor;
+            document.getElementById('teamBName').style.color = teamBColor;
+            
+            updateTroopList('A', teamATroops);
+            updateTroopList('B', teamBTroops);
+            updateRemainingTroops();
+            updateRetreatBoxes();
+            
+            checkForVictory();
+        }
+
+        // Update troop list display
+        function updateTroopList(team, troops) {
+            const listDiv = document.getElementById(`team${team}List`);
+            const grouped = {};
+            
+            troops.forEach(t => {
+                if (!grouped[t.name]) {
+                    grouped[t.name] = { count: 0, icon: t.icon, lives: [], groundAttacks: 0 };
+                }
+                grouped[t.name].count++;
+                grouped[t.name].lives.push(t.currentLives);
+                grouped[t.name].groundAttacks += t.groundAttacksRemaining || 0;
+            });
+            
+            let html = '';
+            for (let name in grouped) {
+                const avgLives = (grouped[name].lives.reduce((a, b) => a + b, 0) / grouped[name].lives.length).toFixed(1);
+                let attackText = '';
+                if (grouped[name].groundAttacks > 0) {
+                    attackText = ` [${grouped[name].groundAttacks} attacks]`;
+                }
+                html += `<div>${grouped[name].icon} ${name}: ${grouped[name].count} (❤️ avg ${avgLives})${attackText}</div>`;
+            }
+            
+            listDiv.innerHTML = html || 'No troops';
+        }
+
+        // Roll dice (1-6)
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // Add to battle log (no timestamps)
+        function addToLog(message, type = 'normal') {
+            const log = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const typeClasses = {
+                'dice': 'dice-log',
+                'attacker-loss': 'attacker-loss',
+                'defender-loss': 'defender-loss',
+                'tie': 'tie-log',
+                'retreat': 'retreat-log',
+                'bomber': 'bomber-log',
+                'fighter': 'fighter-log',
+                'aa': 'aa-log',
+                'ship': 'ship-log',
+                'ground': 'ground-log',
+                'nuke': 'nuke-log',
+                'hit': 'hit-log',
+                'death': 'death-log'
+            };
+            
+            if (typeClasses[type]) {
+                entry.classList.add(typeClasses[type]);
+            }
+            
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Format unit with life
+        function formatUnitWithLife(unit) {
+            return `${unit.icon} ${unit.name} ❤️ ${unit.currentLives}/${unit.lives}`;
+        }
+
+        // Check if target is ground-only (troops, tanks, bunker)
+        function isGroundTarget(unit) {
+            return unit.name === 'Troops' || unit.name === 'Tank' || unit.name === 'Bunker';
+        }
+
+        // Check if target can attack planes (AA, ships, other planes)
+        function canAttackAir(unit) {
+            return unit.type === 'aa' || unit.type === 'ship' || unit.type === 'air';
+        }
+
+        // Add unit to appropriate retreat box
+        function addToRetreatBox(unit, reason) {
+            if (unit.type === 'air') {
+                retreatedPlanes.push({ ...unit, reason: reason });
+            } else {
+                retreatedOthers.push({ ...unit, reason: reason });
+            }
+        }
+
+        // Fight between two units
+        function fight(attacker, defender, attackerTeam, defenderTeam) {
+            // Check if attacker has ground attacks left (for planes vs ground)
+            if (attacker.type === 'air' && isGroundTarget(defender)) {
+                if (attacker.groundAttacksRemaining <= 0) {
+                    addToLog(`🏃 ${formatUnitWithLife(attacker)} has no ground attacks left and retreats!`, 'retreat');
+                    addToRetreatBox(attacker, 'No ground attacks left');
+                    attacker.currentLives = 0;
+                    return { winner: 'retreat', loser: attacker };
+                }
+            }
+
+            const attackerRoll = rollDice();
+            const defenderRoll = rollDice();
+            
+            addToLog(`🎲 ${formatUnitWithLife(attacker)} rolls: ${attackerRoll} | ${formatUnitWithLife(defender)} rolls: ${defenderRoll}`, 'dice');
+            
+            if (attackerRoll > defenderRoll) {
+                // Attacker wins
+                if (attacker.type === 'air' && isGroundTarget(defender)) {
+                    // Plane vs Ground - ground loses life, plane uses attack
+                    defender.currentLives--;
+                    attacker.groundAttacksRemaining--;
+                    addToLog(`💥 ${formatUnitWithLife(attacker)} wins ground attack! ${formatUnitWithLife(defender)} loses 1 life`, 'defender-loss');
+                    
+                    if (defender.currentLives <= 0) {
+                        addToLog(`💀 ${formatUnitWithLife(defender)} has been DESTROYED!`, 'death');
+                    }
+                    
+                    // Check if plane used all ground attacks
+                    if (attacker.groundAttacksRemaining === 0) {
+                        addToLog(`🏃 ${formatUnitWithLife(attacker)} has used all ground attacks and retreats!`, 'retreat');
+                        addToRetreatBox(attacker, 'All ground attacks used');
+                        attacker.currentLives = 0;
+                    }
+                } else {
+                    // Regular combat
+                    defender.currentLives--;
+                    
+                    if (attacker.type === 'air' && canAttackAir(defender)) {
+                        addToLog(`💥 ${formatUnitWithLife(attacker)} wins air combat! ${formatUnitWithLife(defender)} loses 1 life`, 'defender-loss');
+                    } else {
+                        addToLog(`💥 ${formatUnitWithLife(attacker)} wins! ${formatUnitWithLife(defender)} loses 1 life`, 'defender-loss');
+                    }
+                    
+                    if (defender.currentLives <= 0) {
+                        addToLog(`💀 ${formatUnitWithLife(defender)} has been DESTROYED!`, 'death');
+                    }
+                }
+                
+                return { winner: 'attacker', loser: defender };
+                
+            } else if (defenderRoll > attackerRoll) {
+                // Defender wins
+                if (attacker.type === 'air' && isGroundTarget(defender)) {
+                    // Plane vs Ground - plane retreats safely (no life loss)
+                    addToLog(`🏃 ${formatUnitWithLife(attacker)} loses to ground target but retreats safely!`, 'retreat');
+                    attacker.groundAttacksRemaining--;
+                    addToRetreatBox(attacker, 'Lost to ground target');
+                    attacker.currentLives = 0;
+                } else {
+                    // Check if defender can attack air (AA, ships, other planes)
+                    if (canAttackAir(defender) && attacker.type === 'air') {
+                        attacker.currentLives--;
+                        
+                        if (defender.type === 'aa') {
+                            addToLog(`💥 ${formatUnitWithLife(defender)} (AA) wins! ${formatUnitWithLife(attacker)} loses 1 life`, 'aa');
+                        } else if (defender.type === 'ship') {
+                            addToLog(`💥 ${formatUnitWithLife(defender)} (Ship) wins! ${formatUnitWithLife(attacker)} loses 1 life`, 'ship');
+                        } else {
+                            addToLog(`💥 ${formatUnitWithLife(defender)} (Air) wins! ${formatUnitWithLife(attacker)} loses 1 life`, 'attacker-loss');
+                        }
+                        
+                        if (attacker.currentLives <= 0) {
+                            addToLog(`💀 ${formatUnitWithLife(attacker)} has been DESTROYED!`, 'death');
+                        }
+                    } else {
+                        attacker.currentLives--;
+                        addToLog(`💥 ${formatUnitWithLife(defender)} wins! ${formatUnitWithLife(attacker)} loses 1 life`, 'attacker-loss');
+                        
+                        if (attacker.currentLives <= 0) {
+                            addToLog(`💀 ${formatUnitWithLife(attacker)} has been DESTROYED!`, 'death');
+                        }
+                    }
+                }
+                
+                return { winner: 'defender', loser: attacker };
+                
+            } else {
+                // Tie
+                if (attacker.type === 'air' && isGroundTarget(defender)) {
+                    addToLog(`🤝 Tie! No damage - ground attack NOT used`, 'tie');
+                } else {
+                    addToLog(`🤝 Tie! No damage to either unit`, 'tie');
+                }
+                return { winner: 'tie', loser: null };
+            }
+        }
+
+        // Get next attacker based on priority
+        function getNextAttacker(team) {
+            return team
+                .filter(t => t.currentLives > 0)
+                .sort((a, b) => a.priority - b.priority)[0];
+        }
+
+        // Get next defender based on priority matching
+        function getNextDefender(attackers, defenders) {
+            if (!attackers || attackers.length === 0) return null;
+            
+            const currentAttacker = attackers[0];
+            
+            // Try to find defender with same priority
+            let defender = defenders.find(d => d.priority === currentAttacker.priority && d.currentLives > 0);
+            
+            // If not found, get highest priority defender
+            if (!defender) {
+                defender = defenders
+                    .filter(d => d.currentLives > 0)
+                    .sort((a, b) => a.priority - b.priority)[0];
+            }
+            
+            return defender;
+        }
+
+        // Process next turn
+        function nextTurn() {
+            if (!battleInProgress) {
+                return false;
+            }
+
+            if (checkForVictory()) return false;
+
+            // Sort troops by priority
+            teamATroops.sort((a, b) => a.priority - b.priority);
+            teamBTroops.sort((a, b) => a.priority - b.priority);
+
+            const attacker = getNextAttacker(teamATroops);
+            const defender = getNextDefender(teamATroops, teamBTroops);
+
+            if (!attacker || !defender) {
+                addToLog('No valid attackers or defenders!');
+                checkForVictory();
+                return false;
+            }
+
+            // Log attack type
+            if (attacker.type === 'air') {
+                if (isGroundTarget(defender)) {
+                    addToLog(`\n=== GROUND ATTACK: ${formatUnitWithLife(attacker)} vs ${formatUnitWithLife(defender)} (${attacker.groundAttacksRemaining}/${attacker.totalGroundAttacks}) ===`, 'ground');
+                } else if (canAttackAir(defender)) {
+                    if (defender.type === 'aa') {
+                        addToLog(`\n=== AIR VS AA: ${formatUnitWithLife(attacker)} vs ${formatUnitWithLife(defender)} ===`, 'aa');
+                    } else if (defender.type === 'ship') {
+                        addToLog(`\n=== AIR VS SHIP: ${formatUnitWithLife(attacker)} vs ${formatUnitWithLife(defender)} ===`, 'ship');
+                    } else {
+                        addToLog(`\n=== AIR COMBAT: ${formatUnitWithLife(attacker)} vs ${formatUnitWithLife(defender)} ===`, 'fighter');
+                    }
+                }
+            } else {
+                addToLog(`\n=== COMBAT: ${formatUnitWithLife(attacker)} vs ${formatUnitWithLife(defender)} ===`, 'hit');
+            }
+            
+            const result = fight(attacker, defender, 'TEAM A', 'TEAM B');
+
+            saveTurnSnapshot(attacker, defender, result.winner);
+
+            teamATroops = teamATroops.filter(t => t.currentLives > 0);
+            teamBTroops = teamBTroops.filter(t => t.currentLives > 0);
+
+            updateTeamSummary();
+            
+            return true;
+        }
+
+        // Simulate until victory
+        window.simulateToVictory = function() {
+            if (!battleInProgress) {
+                startBattle();
+            }
+
+            addToLog('\n⚡ SIMULATING TO VICTORY ⚡', 'hit');
+
+            let turnCount = 0;
+            while (battleInProgress && teamATroops.length > 0 && teamBTroops.length > 0) {
+                nextTurn();
+                turnCount++;
+                
+                if (turnCount % 100 === 0) {
+                    addToLog(`⚠️ ${turnCount} turns completed...`, 'hit');
+                }
+            }
+            
+            addToLog(`\n=== BATTLE COMPLETE AFTER ${turnCount} TURNS ===`, 'hit');
+        };
+
+        // Start battle
+        function startBattle() {
+            teamATroops = getTeamTroops('A');
+            teamBTroops = getTeamTroops('B');
+            retreatedPlanes = [];
+            retreatedOthers = [];
+            turnNumber = 0;
+            turnHistory = [];
+            battleInProgress = true;
+            
+            document.getElementById('battleLog').innerHTML = '<div class="log-entry">=== BATTLE STARTED ===</div>';
+            document.getElementById('teamASummary').classList.remove('winner-card', 'loser-card');
+            document.getElementById('teamBSummary').classList.remove('winner-card', 'loser-card');
+            document.getElementById('turnHistory').innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No turns yet</div>';
+            
+            addToLog(`TEAM A: ${teamATroops.length} troops`, 'hit');
+            addToLog(`TEAM B: ${teamBTroops.length} troops`, 'hit');
+            
+            const fighters = teamATroops.filter(t => t.name === 'Fighter Plane').length;
+            const bombers = teamATroops.filter(t => t.name === 'Bomber').length;
+            const transports = teamATroops.filter(t => t.name === 'Transport Plane').length;
+            const aaGuns = teamBTroops.filter(t => t.type === 'aa').length;
+            const ships = teamBTroops.filter(t => t.type === 'ship').length;
+            const groundTargets = teamBTroops.filter(t => isGroundTarget(t)).length;
+            
+            if (fighters > 0) addToLog(`✈️ TEAM A has ${fighters} Fighters (1 attack)`, 'fighter');
+            if (bombers > 0) addToLog(`💣 TEAM A has ${bombers} Bombers (5 attacks)`, 'bomber');
+            if (transports > 0) addToLog(`🛩️ TEAM A has ${transports} Transports (2 lives, 1 attack)`, 'fighter');
+            if (aaGuns > 0) addToLog(`🎯 TEAM B has ${aaGuns} AA units`, 'aa');
+            if (ships > 0) addToLog(`🚢 TEAM B has ${ships} Ships`, 'ship');
+            if (groundTargets > 0) addToLog(`🪖 TEAM B has ${groundTargets} ground targets`, 'ground');
+            
+            updateTeamSummary();
+            document.getElementById('phaseIndicator').innerHTML = 'CURRENT: Battle in Progress';
+        }
+
+        // Check for victory
+        function checkForVictory() {
+            if (teamATroops.length === 0 && teamBTroops.length === 0) {
+                addToLog(`\n=== 🤝 MUTUAL DESTRUCTION! DRAW! 🤝 ===`, 'hit');
+                battleInProgress = false;
+                document.getElementById('phaseIndicator').innerHTML = 'BATTLE ENDED: DRAW';
+                return true;
+            } else if (teamATroops.length === 0) {
+                addToLog(`\n=== 🏆 TEAM B VICTORY! 🏆 ===`, 'hit');
+                document.getElementById('teamBSummary').classList.add('winner-card');
+                document.getElementById('teamASummary').classList.add('loser-card');
+                battleInProgress = false;
+                document.getElementById('phaseIndicator').innerHTML = 'BATTLE ENDED: TEAM B VICTORY';
+                return true;
+            } else if (teamBTroops.length === 0) {
+                addToLog(`\n=== 🏆 TEAM A VICTORY! 🏆 ===`, 'hit');
+                document.getElementById('teamASummary').classList.add('winner-card');
+                document.getElementById('teamBSummary').classList.add('loser-card');
+                battleInProgress = false;
+                document.getElementById('phaseIndicator').innerHTML = 'BATTLE ENDED: TEAM A VICTORY';
+                return true;
+            }
+            return false;
+        }
+
+        // Use nuke
+        window.useNuke = function() {
+            if (!battleInProgress) {
+                startBattle();
+            }
+            
+            addToLog('\n☢️☢️☢️ NUKE DETONATED! ☢️☢️☢️', 'nuke');
+            
+            [teamATroops, teamBTroops].forEach((team, index) => {
+                const teamName = index === 0 ? 'TEAM A' : 'TEAM B';
+                
+                team.forEach(troop => {
+                    const oldLives = troop.currentLives;
+                    
+                    if (troop.currentLives < 4) {
+                        troop.currentLives = 0;
+                        addToLog(`☢️ ${troop.icon} ${troop.name} (${teamName}) - DESTROYED!`, 'nuke');
+                    } else {
+                        troop.currentLives -= 4;
+                        addToLog(`☢️ ${troop.icon} ${troop.name} (${teamName}) - ${oldLives} → ${troop.currentLives}`, 'nuke');
+                    }
+                });
+            });
+            
+            teamATroops = teamATroops.filter(t => t.currentLives > 0);
+            teamBTroops = teamBTroops.filter(t => t.currentLives > 0);
+            
+            updateTeamSummary();
+            checkForVictory();
+        };
+
+        // Reset battle
+        window.resetBattle = function() {
+            teamATroops = [];
+            teamBTroops = [];
+            retreatedPlanes = [];
+            retreatedOthers = [];
+            turnNumber = 0;
+            turnHistory = [];
+            battleInProgress = false;
+            
+            document.getElementById('battleLog').innerHTML = '<div class="log-entry">=== BATTLE LOG INITIALIZED ===</div>';
+            document.getElementById('teamASummary').classList.remove('winner-card', 'loser-card');
+            document.getElementById('teamBSummary').classList.remove('winner-card', 'loser-card');
+            document.getElementById('phaseIndicator').innerHTML = 'CURRENT: Ready to Battle';
+            document.getElementById('turnHistory').innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No turns yet</div>';
+            
+            teamATroops = getTeamTroops('A');
+            teamBTroops = getTeamTroops('B');
+            
+            updateTeamSummary();
+            
+            addToLog('=== BATTLE RESET ===', 'hit');
+        };
+
+        // Update team titles with colors
+        document.getElementById('teamAColor').addEventListener('input', function(e) {
+            document.getElementById('teamATitle').style.color = e.target.value;
+        });
+        
+        document.getElementById('teamBColor').addEventListener('input', function(e) {
+            document.getElementById('teamBTitle').style.color = e.target.value;
+        });
+
+        // Initialize with default troops
+        window.onload = function() {
+            setTimeout(() => {
+                addTroop('A');
+                addTroop('A');
+                addTroop('A');
+                
+                addTroop('B');
+                addTroop('B');
+                addTroop('B');
+                
+                updateTeamSummary();
+            }, 100);
+        };
+    </script>
+</body>
+</html>
